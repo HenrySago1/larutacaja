@@ -31,7 +31,7 @@ export const impulsadorasApi = {
 
 export const ventasApi = {
   list: () => unwrap<Venta[]>(api.get('/ventas')),
-  create: (payload: { tipoPago: TipoPago; impulsadoraId?: string | null; detalles: { productoId: string; cantidad: number }[] }) =>
+  create: (payload: { tipoPago: TipoPago; impulsadoraId?: string | null; montoEfectivo?: number; montoQr?: number; montoTransf?: number; detalles: { productoId: string; cantidad: number; precioUnitarioPersonalizado?: number }[] }) =>
     unwrap<{ message: string; id: string; total: string }>(api.post('/ventas', payload)),
 };
 
