@@ -1,0 +1,20 @@
+{
+  "name": "la-ruta-caja",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Sistema web de caja e inventario para la Licoreria La Ruta",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @la-ruta/backend --filter @la-ruta/frontend dev",
+    "dev:local": "powershell -ExecutionPolicy Bypass -File ./scripts/dev-local.ps1",
+    "build": "pnpm --recursive build",
+    "lint": "pnpm --recursive lint",
+    "typecheck": "pnpm --recursive typecheck",
+    "prisma:generate": "pnpm --filter @la-ruta/backend prisma:generate",
+    "prisma:migrate": "pnpm --filter @la-ruta/backend prisma:migrate",
+    "seed": "pnpm --filter @la-ruta/backend seed"
+  },
+  "packageManager": "pnpm@9.15.0",
+  "devDependencies": {
+    "typescript": "^5.6.3"
+  }
+}

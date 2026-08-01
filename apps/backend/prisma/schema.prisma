@@ -1,0 +1,180 @@
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  CAJERO
+}
+
+enum EstadoCaja {
+  ABIERTO
+  CERRADO
+}
+
+enum ConceptoEgreso {
+  HIELO
+  SODA
+  TRANSPORTE
+  PROVEEDOR
+  OTRO
+}
+
+enum TipoPago {
+  EFECTIVO
+  QR
+  TRANSFERENCIA
+  MIXTO
+}
+
+model User {
+  id           String      @id @default(uuid())
+  email        String      @unique
+  name         String
+  role         Role        @default(CAJERO)
+  firebaseUid  String      @unique
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  cajasAbiertas CajaTurno[] @relation("CajeroApertura")
+  cajasCerradas CajaTurno[] @relation("CajeroCierre")
+  egresos       Egreso[]
+  ventas        Venta[]
+
+  @@map("users")
+}
+
+model CajaTurno {
+  id                   String     @id @default(uuid())
+  fechaApertura        DateTime   @default(now())
+  fechaCierre          DateTime?
+  totalInicial         Decimal    @db.Decimal(10, 2)
+  totalBilletesInicial Decimal    @db.Decimal(10, 2)
+  totalMonedasInicial  Decimal    @db.Decimal(10, 2)
+  entregadoPor         String
+  recibidoPor          String
+  totalVentasEfectivo  Decimal    @default(0.00) @db.Decimal(10, 2)
+  totalVentasQr        Decimal    @default(0.00) @db.Decimal(10, 2)
+  totalVentasTransf    Decimal    @default(0.00) @db.Decimal(10, 2)
+  totalEgresos         Decimal    @default(0.00) @db.Decimal(10, 2)
+  cajaEsperada         Decimal    @db.Decimal(10, 2)
+  cajaReal             Decimal?   @db.Decimal(10, 2)
+  diferencia           Decimal?   @db.Decimal(10, 2)
+  notas                String?    @db.Text
+  estado               EstadoCaja @default(ABIERTO)
+  userId               String
+  cerradoPorId         String?
+
+  userApertura     User     @relation("CajeroApertura", fields: [userId], references: [id], onDelete: Restrict)
+  userCierre       User?    @relation("CajeroCierre", fields: [cerradoPorId], references: [id], onDelete: Restrict)
+  egresosAsociados Egreso[]
+  ventasAsociadas  Venta[]
+
+  @@index([estado])
+  @@index([fechaApertura])
+  @@map("caja_turnos")
+}
+
+model Egreso {
+  id          String         @id @default(uuid())
+  concepto    ConceptoEgreso
+  detalle     String         @db.VarChar(255)
+  monto       Decimal        @db.Decimal(10, 2)
+  createdAt   DateTime       @default(now())
+  cajaTurnoId String
+  userId      String
+
+  cajaTurno CajaTurno @relation(fields: [cajaTurnoId], references: [id], onDelete: Cascade)
+  cajero    User      @relation(fields: [userId], references: [id], onDelete: Restrict)
+
+  @@index([cajaTurnoId])
+  @@index([createdAt])
+  @@map("egresos")
+}
+
+model Impulsadora {
+  id        String   @id @default(uuid())
+  nombre    String   @db.VarChar(100)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  ventas Venta[]
+
+  @@map("impulsadoras")
+}
+
+model Categoria {
+  id        String   @id @default(uuid())
+  nombre    String   @unique @db.VarChar(50)
+  createdAt DateTime @default(now())
+
+  productos Producto[]
+
+  @@map("categorias")
+}
+
+model Producto {
+  id           String   @id @default(uuid())
+  nombre       String   @db.VarChar(150)
+  precioVenta  Decimal  @db.Decimal(10, 2)
+  precioCompra Decimal  @db.Decimal(10, 2)
+  stock        Int
+  stockMinimo  Int      @default(5)
+  imgUrl       String?  @db.Text
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  categoriaId  String
+
+  categoria Categoria      @relation(fields: [categoriaId], references: [id], onDelete: Restrict)
+  detalles  DetalleVenta[]
+
+  @@index([categoriaId])
+  @@index([stock])
+  @@map("productos")
+}
+
+model Venta {
+  id            String    @id @default(uuid())
+  tipoPago      TipoPago
+  total         Decimal   @db.Decimal(10, 2)
+  createdAt     DateTime  @default(now())
+  cajaTurnoId   String
+  impulsadoraId String?
+  userId        String
+  montoEfectivo Decimal?  @db.Decimal(10, 2)
+  montoQr       Decimal?  @db.Decimal(10, 2)
+  montoTransf   Decimal?  @db.Decimal(10, 2)
+
+  cajaTurno   CajaTurno       @relation(fields: [cajaTurnoId], references: [id], onDelete: Restrict)
+  impulsadora Impulsadora?    @relation(fields: [impulsadoraId], references: [id], onDelete: SetNull)
+  cajero      User            @relation(fields: [userId], references: [id], onDelete: Restrict)
+  detalles    DetalleVenta[]
+
+  @@index([cajaTurnoId])
+  @@index([createdAt])
+  @@index([tipoPago])
+  @@map("ventas")
+}
+
+model DetalleVenta {
+  id             String  @id @default(uuid())
+  cantidad       Int
+  precioUnitario Decimal @db.Decimal(10, 2)
+  subtotal       Decimal @db.Decimal(10, 2)
+  ventaId        String
+  productoId     String
+
+  venta    Venta    @relation(fields: [ventaId], references: [id], onDelete: Cascade)
+  producto Producto @relation(fields: [productoId], references: [id], onDelete: Restrict)
+
+  @@index([ventaId])
+  @@index([productoId])
+  @@map("detalle_ventas")
+}
