@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from '../../prisma/prisma.service';
 import { CreateProductoDto } from './dto/create-producto.dto';
@@ -28,11 +28,34 @@ export class ProductosService {
     }).then((productos) => (filters.bajoStock ? productos.filter((producto) => producto.stock <= producto.stockMinimo) : productos));
   }
 
-  create(dto: CreateProductoDto) {
+  async create(dto: CreateProductoDto) {
+    const existing = await this.prisma.producto.findFirst({
+      where: { nombre: { equals: dto.nombre, mode: 'insensitive' } },
+    });
+    if (existing) {
+      throw new BadRequestException('Ya existe un producto con ese nombre');
+    }
     return this.prisma.producto.create({ data: dto, include: { categoria: true } });
   }
 
-  update(id: string, dto: UpdateProductoDto) {
+  async update(id: string, dto: UpdateProductoDto) {
+    if (dto.nombre) {
+      const existing = await this.prisma.producto.findFirst({
+        where: { nombre: { equals: dto.nombre, mode: 'insensitive' }, id: { not: id } },
+      });
+      if (existing) {
+        throw new BadRequestException('Ya existe otro producto con ese nombre');
+      }
+    }
     return this.prisma.producto.update({ where: { id }, data: dto, include: { categoria: true } });
+  }
+
+  async remove(id: string) {
+    try {
+      await this.prisma.producto.delete({ where: { id } });
+      return { message: 'Producto eliminado' };
+    } catch (error) {
+      throw new BadRequestException('No se puede eliminar el producto porque tiene ventas asociadas');
+    }
   }
 }

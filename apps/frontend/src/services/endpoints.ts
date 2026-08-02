@@ -18,6 +18,7 @@ export const productosApi = {
   list: (params?: { categoriaId?: string; search?: string; bajoStock?: boolean }) => unwrap<Producto[]>(api.get('/productos', { params })),
   create: (payload: Partial<Producto>) => unwrap<Producto>(api.post('/productos', payload)),
   update: (id: string, payload: Partial<Producto>) => unwrap<Producto>(api.put(`/productos/${id}`, payload)),
+  delete: (id: string) => unwrap<{ message: string }>(api.delete(`/productos/${id}`)),
 };
 
 export const categoriasApi = {

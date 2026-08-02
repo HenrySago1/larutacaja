@@ -46,6 +46,19 @@ export function InventarioPage() {
       setEditingId(null);
       await queryClient.invalidateQueries({ queryKey: ['productos'] });
     },
+    onError: (error: any) => {
+      alert(error.response?.data?.message || 'Error al guardar el producto');
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: productosApi.delete,
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ['productos'] });
+    },
+    onError: (error: any) => {
+      alert(error.response?.data?.message || 'Error al eliminar el producto');
+    }
   });
 
   function edit(producto: Producto) {
@@ -132,7 +145,18 @@ export function InventarioPage() {
                     <td>{producto.stock}</td>
                     <td>{producto.stockMinimo}</td>
                     <td><Badge tone={tone}>{label}</Badge></td>
-                    <td>{user?.role === 'ADMIN' ? <Button variant="secondary" onClick={() => edit(producto)}>Editar</Button> : null}</td>
+                    <td>
+                      {user?.role === 'ADMIN' ? (
+                        <div className="flex gap-2">
+                          <Button variant="secondary" onClick={() => edit(producto)}>Editar</Button>
+                          <Button variant="secondary" onClick={() => {
+                            if (confirm('Seguro que deseas eliminar este producto?')) {
+                              deleteMutation.mutate(producto.id);
+                            }
+                          }}>Borrar</Button>
+                        </div>
+                      ) : null}
+                    </td>
                   </tr>
                 );
               })}

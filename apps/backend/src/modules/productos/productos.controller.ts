@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { Roles } from '../../common/decorators/roles.decorator';
 import { FirebaseAuthGuard } from '../../common/guards/firebase-auth.guard';
@@ -31,5 +31,11 @@ export class ProductosController {
   @Roles(Role.ADMIN)
   update(@Param('id') id: string, @Body() dto: UpdateProductoDto) {
     return this.productosService.update(id, dto);
+  }
+
+  @Delete(':id')
+  @Roles(Role.ADMIN)
+  remove(@Param('id') id: string) {
+    return this.productosService.remove(id);
   }
 }
