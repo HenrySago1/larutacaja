@@ -78,8 +78,8 @@ export function InventarioPage() {
       </div>
       {user?.role === 'ADMIN' ? (
         <Card className="p-5">
-          <form className="grid grid-cols-7 gap-3" onSubmit={handleSubmit}>
-            <Input className="col-span-2" placeholder="Nombre" value={form.nombre} onChange={(event) => setForm({ ...form, nombre: event.target.value })} required />
+          <form className="grid grid-cols-1 md:grid-cols-7 gap-3" onSubmit={handleSubmit}>
+            <Input className="md:col-span-2" placeholder="Nombre" value={form.nombre} onChange={(event) => setForm({ ...form, nombre: event.target.value })} required />
             <Select value={effectiveForm.categoriaId} onChange={(event) => setForm({ ...form, categoriaId: event.target.value })}>
               {categoriasQuery.data?.map((categoria) => <option key={categoria.id} value={categoria.id}>{categoria.nombre}</option>)}
             </Select>
@@ -97,7 +97,7 @@ export function InventarioPage() {
         </Card>
       ) : null}
       <Card className="p-5">
-        <div className="mb-4 grid grid-cols-[1fr_220px_180px] gap-3">
+        <div className="mb-4 grid grid-cols-1 md:grid-cols-[1fr_220px_180px] gap-3">
           <Input placeholder="Buscar producto..." value={search} onChange={(event) => setSearch(event.target.value)} />
           <Select value={categoriaId} onChange={(event) => setCategoriaId(event.target.value)}>
             <option value="">Todas</option>

@@ -108,8 +108,8 @@ export function PosPage() {
   }, [handleCobrar, impulsadoraId, items.length, tipoPago]);
 
   return (
-    <div className="flex h-[calc(100vh-6.5rem)] flex-col gap-4">
-      <div className="grid min-h-0 flex-1 grid-cols-[280px_1fr_360px] gap-4">
+    <div className="flex h-auto lg:h-[calc(100vh-6.5rem)] flex-col gap-4">
+      <div className="grid min-h-0 flex-1 grid-cols-1 md:grid-cols-[220px_1fr] lg:grid-cols-[280px_1fr_360px] gap-4">
         <Card className="p-4">
           <h2 className="text-sm font-extrabold uppercase text-slate-500">Categorias</h2>
           <div className="mt-3 grid gap-2">
@@ -163,7 +163,7 @@ export function PosPage() {
           </div>
         </section>
 
-        <Card className="flex min-h-0 flex-col p-4">
+        <Card className="flex min-h-0 flex-col p-4 md:col-span-2 lg:col-span-1">
           <h2 className="text-lg font-extrabold text-slate-950">Detalle de la venta</h2>
           <label className="mt-4 block text-sm font-semibold text-slate-700">
             Impulsadora
