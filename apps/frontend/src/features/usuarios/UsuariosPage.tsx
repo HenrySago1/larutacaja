@@ -54,7 +54,7 @@ export function UsuariosPage() {
             <div key={user.id} className="py-3">
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-slate-950">{user.name}</p>
-                <Badge tone={user.role === 'ADMIN' ? 'red' : 'blue'}>{user.role}</Badge>
+                <Badge tone={user.role === 'ADMIN' ? 'red' : 'indigo'}>{user.role}</Badge>
               </div>
               <p className="text-sm text-slate-500">{user.email}</p>
             </div>
