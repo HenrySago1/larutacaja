@@ -96,9 +96,9 @@ export function InventarioPage() {
             <Select value={effectiveForm.categoriaId} onChange={(event) => setForm({ ...form, categoriaId: event.target.value })}>
               {categoriasQuery.data?.map((categoria) => <option key={categoria.id} value={categoria.id}>{categoria.nombre}</option>)}
             </Select>
-            <Input type="number" min="0" step="0.01" placeholder="P. compra" value={form.precioCompra} onChange={(event) => setForm({ ...form, precioCompra: Number(event.target.value) })} />
-            <Input type="number" min="0" step="0.01" placeholder="P. venta" value={form.precioVenta} onChange={(event) => setForm({ ...form, precioVenta: Number(event.target.value) })} />
-            <Input type="number" min="0" placeholder="Stock" value={form.stock} onChange={(event) => setForm({ ...form, stock: Number(event.target.value) })} />
+            <Input type="number" min="0" step="0.01" placeholder="P. compra" value={form.precioCompra} onChange={(event) => setForm({ ...form, precioCompra: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
+            <Input type="number" min="0" step="0.01" placeholder="P. venta" value={form.precioVenta} onChange={(event) => setForm({ ...form, precioVenta: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
+            <Input type="number" min="0" placeholder="Stock" value={form.stock} onChange={(event) => setForm({ ...form, stock: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
             <Button disabled={saveMutation.isPending}>{editingId ? 'Actualizar' : 'Nuevo producto'}</Button>
           </form>
           {editingId ? (
