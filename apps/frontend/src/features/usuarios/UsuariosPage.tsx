@@ -1,23 +1,28 @@
 import { FormEvent, useState } from 'react';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { authApi } from '../../services/endpoints';
+import { Badge } from '../../components/ui/badge';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
 
 export function UsuariosPage() {
+  const queryClient = useQueryClient();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
 
+  const usersQuery = useQuery({ queryKey: ['users'], queryFn: authApi.users });
+
   const mutation = useMutation({
     mutationFn: authApi.registerCajero,
-    onSuccess: () => {
+    onSuccess: async () => {
       setName('');
       setEmail('');
       setPassword('');
       setMessage('Cajero creado con exito');
+      await queryClient.invalidateQueries({ queryKey: ['users'] });
     },
     onError: () => setMessage('No se pudo crear el cajero'),
   });
@@ -29,7 +34,7 @@ export function UsuariosPage() {
   }
 
   return (
-    <div className="max-w-xl">
+    <div className="grid max-w-5xl grid-cols-1 items-start gap-5 lg:grid-cols-2">
       <Card className="p-5">
         <h1 className="text-2xl font-extrabold text-slate-950">Gestion de Cajeros</h1>
         <p className="mt-1 text-sm text-slate-500">Crea usuarios operativos en Firebase Authentication y la base local.</p>
@@ -40,6 +45,22 @@ export function UsuariosPage() {
           {message ? <p className="rounded-lg bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700">{message}</p> : null}
           <Button disabled={mutation.isPending}>Crear cajero</Button>
         </form>
+      </Card>
+      
+      <Card className="p-5">
+        <h2 className="text-lg font-extrabold text-slate-950">Usuarios Registrados</h2>
+        <div className="mt-4 divide-y divide-slate-100">
+          {usersQuery.data?.map((user) => (
+            <div key={user.id} className="py-3">
+              <div className="flex items-center justify-between">
+                <p className="font-semibold text-slate-950">{user.name}</p>
+                <Badge tone={user.role === 'ADMIN' ? 'red' : 'blue'}>{user.role}</Badge>
+              </div>
+              <p className="text-sm text-slate-500">{user.email}</p>
+            </div>
+          ))}
+          {usersQuery.data?.length === 0 && <p className="text-sm text-slate-500">No hay usuarios registrados</p>}
+        </div>
       </Card>
     </div>
   );

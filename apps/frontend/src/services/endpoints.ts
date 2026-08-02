@@ -3,6 +3,7 @@ import type { CajaDetalle, CajaTurno, Categoria, ConceptoEgreso, Egreso, Impulsa
 
 export const authApi = {
   me: () => unwrap<User>(api.get('/auth/me')),
+  users: () => unwrap<User[]>(api.get('/auth/users')),
   registerCajero: (payload: { email: string; password: string; name: string }) => unwrap<{ message: string; id: string }>(api.post('/auth/register-cajero', payload)),
 };
 
@@ -21,6 +22,9 @@ export const productosApi = {
 
 export const categoriasApi = {
   list: () => unwrap<Categoria[]>(api.get('/categorias')),
+  create: (payload: { nombre: string }) => unwrap<Categoria>(api.post('/categorias', payload)),
+  update: (id: string, payload: Partial<Categoria>) => unwrap<Categoria>(api.put(`/categorias/${id}`, payload)),
+  delete: (id: string) => unwrap<{ message: string }>(api.delete(`/categorias/${id}`)),
 };
 
 export const impulsadorasApi = {

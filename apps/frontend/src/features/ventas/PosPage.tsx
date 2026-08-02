@@ -169,7 +169,7 @@ export function PosPage() {
             Impulsadora
             <Select id="impulsadora-select" className="mt-2" value={impulsadoraId} onChange={(event) => setImpulsadoraId(event.target.value)}>
               <option value="">Seleccionar...</option>
-              {impulsadorasQuery.data?.map((impulsadora) => (
+              {impulsadorasQuery.data?.filter(i => i.isActive).map((impulsadora) => (
                 <option key={impulsadora.id} value={impulsadora.id}>{impulsadora.nombre}</option>
               ))}
             </Select>

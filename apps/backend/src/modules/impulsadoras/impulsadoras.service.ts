@@ -8,7 +8,7 @@ export class ImpulsadorasService {
   constructor(private readonly prisma: PrismaService) {}
 
   findAll() {
-    return this.prisma.impulsadora.findMany({ where: { isActive: true }, orderBy: { nombre: 'asc' } });
+    return this.prisma.impulsadora.findMany({ orderBy: { nombre: 'asc' } });
   }
 
   create(dto: CreateImpulsadoraDto) {

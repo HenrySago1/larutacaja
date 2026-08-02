@@ -22,4 +22,10 @@ export class AuthController {
   registerCajero(@Body() dto: RegisterCajeroDto) {
     return this.authService.registerCajero(dto);
   }
+
+  @Get('users')
+  @Roles(Role.ADMIN)
+  getUsers() {
+    return this.authService.findAll();
+  }
 }

@@ -9,6 +9,7 @@ import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
 import { Select } from '../../components/ui/select';
+import { CategoriasModal } from './CategoriasModal';
 
 const emptyProduct = {
   nombre: '',
@@ -27,6 +28,7 @@ export function InventarioPage() {
   const [bajoStock, setBajoStock] = useState(false);
   const [form, setForm] = useState(emptyProduct);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [showCategorias, setShowCategorias] = useState(false);
 
   const categoriasQuery = useQuery({ queryKey: ['categorias'], queryFn: categoriasApi.list });
   const productosQuery = useQuery({
@@ -70,6 +72,9 @@ export function InventarioPage() {
           <h1 className="text-2xl font-extrabold text-slate-950">Inventario de Productos</h1>
           <p className="text-sm text-slate-500">Control de precios, stock y alertas minimas</p>
         </div>
+        {user?.role === 'ADMIN' ? (
+          <Button variant="secondary" onClick={() => setShowCategorias(true)}>Gestionar Categorias</Button>
+        ) : null}
       </div>
       {user?.role === 'ADMIN' ? (
         <Card className="p-5">
@@ -135,6 +140,10 @@ export function InventarioPage() {
           </table>
         </div>
       </Card>
+      
+      {showCategorias && categoriasQuery.data && (
+        <CategoriasModal categorias={categoriasQuery.data} onClose={() => setShowCategorias(false)} />
+      )}
     </div>
   );
 }

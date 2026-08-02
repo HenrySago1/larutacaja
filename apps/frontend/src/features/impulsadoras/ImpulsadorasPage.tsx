@@ -27,8 +27,11 @@ export function ImpulsadorasPage() {
     createMutation.mutate({ nombre });
   }
 
+  const activas = impulsadorasQuery.data?.filter(i => i.isActive) ?? [];
+  const inactivas = impulsadorasQuery.data?.filter(i => !i.isActive) ?? [];
+
   return (
-    <div className="grid max-w-4xl grid-cols-[360px_1fr] gap-5">
+    <div className="grid max-w-5xl grid-cols-1 items-start gap-5 lg:grid-cols-[360px_1fr]">
       <Card className="p-5">
         <h1 className="text-2xl font-extrabold text-slate-950">Impulsadoras</h1>
         <form className="mt-5 space-y-4" onSubmit={handleSubmit}>
@@ -36,20 +39,41 @@ export function ImpulsadorasPage() {
           <Button disabled={createMutation.isPending || !nombre.trim()}>Crear impulsadora</Button>
         </form>
       </Card>
-      <Card className="p-5">
-        <h2 className="text-lg font-extrabold text-slate-950">Activas</h2>
-        <div className="mt-4 divide-y divide-slate-100">
-          {impulsadorasQuery.data?.map((impulsadora) => (
-            <div key={impulsadora.id} className="flex items-center justify-between py-3">
-              <div>
-                <p className="font-semibold text-slate-950">{impulsadora.nombre}</p>
-                <Badge tone="green">Activa</Badge>
+      
+      <div className="space-y-5">
+        <Card className="p-5">
+          <h2 className="text-lg font-extrabold text-slate-950">Activas</h2>
+          <div className="mt-4 divide-y divide-slate-100">
+            {activas.map((impulsadora) => (
+              <div key={impulsadora.id} className="flex items-center justify-between py-3">
+                <div>
+                  <p className="font-semibold text-slate-950">{impulsadora.nombre}</p>
+                  <Badge tone="green">Activa</Badge>
+                </div>
+                <Button variant="secondary" onClick={() => updateMutation.mutate({ id: impulsadora.id, isActive: false })}>Desactivar</Button>
               </div>
-              <Button variant="secondary" onClick={() => updateMutation.mutate({ id: impulsadora.id, isActive: false })}>Desactivar</Button>
+            ))}
+            {activas.length === 0 && <p className="text-sm text-slate-500">No hay impulsadoras activas</p>}
+          </div>
+        </Card>
+
+        {inactivas.length > 0 && (
+          <Card className="p-5 bg-slate-50 border-slate-200">
+            <h2 className="text-lg font-extrabold text-slate-700">Inactivas</h2>
+            <div className="mt-4 divide-y divide-slate-200">
+              {inactivas.map((impulsadora) => (
+                <div key={impulsadora.id} className="flex items-center justify-between py-3">
+                  <div>
+                    <p className="font-semibold text-slate-600 line-through">{impulsadora.nombre}</p>
+                    <Badge tone="slate">Inactiva</Badge>
+                  </div>
+                  <Button variant="secondary" onClick={() => updateMutation.mutate({ id: impulsadora.id, isActive: true })}>Reactivar</Button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </Card>
+          </Card>
+        )}
+      </div>
     </div>
   );
 }
