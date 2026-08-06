@@ -9,22 +9,30 @@ import { CerrarCajaDto } from './dto/cerrar-caja.dto';
 export class CajaService {
   constructor(private readonly prisma: PrismaService) {}
 
-  getActivo() {
-    return this.prisma.cajaTurno.findFirst({
-      where: { estado: EstadoCaja.ABIERTO },
-      include: { userApertura: { select: { id: true, name: true, email: true } } },
-    });
+  async getActivo() {
+    try {
+      return await this.prisma.cajaTurno.findFirst({
+        where: { estado: EstadoCaja.ABIERTO },
+        include: { userApertura: { select: { id: true, name: true, email: true } } },
+      });
+    } catch {
+      return null;
+    }
   }
 
-  getUltimoCierre() {
-    return this.prisma.cajaTurno.findFirst({
-      where: { estado: EstadoCaja.CERRADO },
-      orderBy: { fechaCierre: 'desc' },
-      include: {
-        userApertura: { select: { id: true, name: true, email: true } },
-        userCierre: { select: { id: true, name: true, email: true } },
-      },
-    });
+  async getUltimoCierre() {
+    try {
+      return await this.prisma.cajaTurno.findFirst({
+        where: { estado: EstadoCaja.CERRADO },
+        orderBy: { fechaCierre: 'desc' },
+        include: {
+          userApertura: { select: { id: true, name: true, email: true } },
+          userCierre: { select: { id: true, name: true, email: true } },
+        },
+      });
+    } catch {
+      return null;
+    }
   }
 
   getHistorial() {

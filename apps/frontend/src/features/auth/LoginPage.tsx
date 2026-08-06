@@ -21,26 +21,24 @@ export function LoginPage() {
     setError('');
 
     try {
-      // 1. Intentar iniciar sesión en Firebase Auth
+      // 1. Intentar autenticación inmediata mediante Backend (Admin y Cajeros registrados)
       try {
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const token = await userCredential.user.getIdToken();
-        localStorage.setItem('dev-token', token);
-        window.location.href = '/pos';
-        return;
+        const result = await authApi.login({ email, password });
+        if (result?.token) {
+          localStorage.setItem('dev-token', result.token);
+          window.location.href = '/pos';
+          return;
+        }
       } catch {
-        // Continuar con backend si Firebase falla o no está configurado
+        // Continuar con Firebase Auth si el backend falla
       }
 
-      // 2. Intentar autenticación mediante Backend (Admin y Cajeros registrados)
-      const result = await authApi.login({ email, password });
-      if (result?.token) {
-        localStorage.setItem('dev-token', result.token);
-        window.location.href = '/pos';
-        return;
-      }
-
-      setError('Correo o contraseña incorrectos');
+      // 2. Intentar autenticación mediante Firebase Auth
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const token = await userCredential.user.getIdToken();
+      localStorage.setItem('dev-token', token);
+      window.location.href = '/pos';
+      return;
     } catch (err: any) {
       setError(err.response?.data?.message || 'Correo o contraseña no válidos');
     } finally {
