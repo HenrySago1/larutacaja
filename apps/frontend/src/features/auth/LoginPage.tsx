@@ -3,6 +3,7 @@ import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom';
 import { LockKeyhole } from 'lucide-react';
 import { auth } from '../../config/firebase';
+import { authApi } from '../../services/endpoints';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
 import { Input } from '../../components/ui/input';
@@ -18,16 +19,30 @@ export function LoginPage() {
     event.preventDefault();
     setLoading(true);
     setError('');
+
     try {
-      if (email === 'admin@laruta.com' && password === 'admin') {
-        localStorage.setItem('dev-token', 'admin-token');
-        // Usamos window.location.href para forzar el reinicio de la app y que lea el nuevo token
+      // 1. Intentar iniciar sesión en Firebase Auth
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const token = await userCredential.user.getIdToken();
+        localStorage.setItem('dev-token', token);
         window.location.href = '/pos';
-      } else {
-        setError('Usa admin@laruta.com / admin para ingresar');
+        return;
+      } catch {
+        // Continuar con backend si Firebase falla o no está configurado
       }
-    } catch {
-      setError('Correo o contrasena invalidos');
+
+      // 2. Intentar autenticación mediante Backend (Admin y Cajeros registrados)
+      const result = await authApi.login({ email, password });
+      if (result?.token) {
+        localStorage.setItem('dev-token', result.token);
+        window.location.href = '/pos';
+        return;
+      }
+
+      setError('Correo o contraseña incorrectos');
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Correo o contraseña no válidos');
     } finally {
       setLoading(false);
     }

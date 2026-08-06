@@ -17,6 +17,11 @@ export class AuthController {
     return user;
   }
 
+  @Post('login')
+  login(@Body() dto: { email: string; password?: string }) {
+    return this.authService.login(dto);
+  }
+
   @Post('register-cajero')
   @Roles(Role.ADMIN)
   registerCajero(@Body() dto: RegisterCajeroDto) {

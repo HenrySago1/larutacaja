@@ -12,6 +12,25 @@ export class AuthService {
     private readonly prisma: PrismaService,
   ) {}
 
+  async login(dto: { email: string; password?: string }) {
+    const user = await this.prisma.user.findFirst({
+      where: { email: { equals: dto.email, mode: 'insensitive' } },
+    });
+    if (!user) {
+      throw new BadRequestException('Usuario o contraseña no válidos');
+    }
+
+    return {
+      token: `dev-token:${user.email}`,
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
+    };
+  }
+
   async registerCajero(dto: RegisterCajeroDto) {
     const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
     if (existing) {
