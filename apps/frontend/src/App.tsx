@@ -26,9 +26,9 @@ export function App() {
           <Route path="/caja/cierre" element={<CierrePage />} />
           <Route path="/egresos" element={<EgresosPage />} />
           <Route path="/inventario" element={<InventarioPage />} />
+          <Route path="/impulsadoras" element={<ImpulsadorasPage />} />
           <Route element={<AdminRoute />}>
             <Route path="/reportes" element={<ReportesPage />} />
-            <Route path="/impulsadoras" element={<ImpulsadorasPage />} />
             <Route path="/usuarios" element={<UsuariosPage />} />
           </Route>
         </Route>
