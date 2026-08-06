@@ -62,13 +62,16 @@ export function AperturaPage() {
     },
   });
 
+  const nombreEntregado = ultimoCierreQuery.data?.userCierre?.name || ultimoCierreQuery.data?.recibidoPor || 'Turno anterior';
+  const nombreRecibido = user?.name || 'Cajero';
+
   function handleSubmit(event: FormEvent) {
     event.preventDefault();
     abrirMutation.mutate({
       totalBilletesInicial: numBilletes,
       totalMonedasInicial: numMonedas,
-      entregadoPor,
-      recibidoPor: recibidoPor || user?.name || 'Cajero',
+      entregadoPor: nombreEntregado,
+      recibidoPor: nombreRecibido,
     });
   }
 
@@ -90,7 +93,7 @@ export function AperturaPage() {
                   <ArrowRightLeft className="h-3.5 w-3.5" /> Turno Anterior Cerrado
                 </span>
                 <p className="text-xs text-slate-600 mt-0.5">
-                  Cerrado por: <strong className="text-slate-900">{ultimoCierreQuery.data?.userCierre?.name || ultimoCierreQuery.data?.recibidoPor}</strong>
+                  Cerrado por: <strong className="text-slate-900">{nombreEntregado}</strong>
                 </p>
               </div>
               <div className="text-right">
@@ -162,31 +165,17 @@ export function AperturaPage() {
             )}
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              De quién recibe turno <span className="text-red-500">*</span>
-              <Select
-                className="mt-1.5 h-10 text-sm font-semibold"
-                value={entregadoPor}
-                onChange={(event) => setEntregadoPor(event.target.value)}
-                required
-              >
-                <option value="">Seleccionar quien entrega...</option>
-                {usersQuery.data?.map((u) => (
-                  <option key={u.id} value={u.name}>{u.name} ({u.email})</option>
-                ))}
-              </Select>
-            </label>
-
-            <label className="block text-xs font-bold uppercase tracking-wider text-slate-700">
-              Recibido por (Cajero entrante) <span className="text-red-500">*</span>
-              <Input
-                className="mt-1.5 h-10 text-sm font-semibold bg-slate-100"
-                value={recibidoPor}
-                onChange={(event) => setRecibidoPor(event.target.value)}
-                required
-              />
-            </label>
+          {/* Resumen del Traspaso de Turno */}
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-100/80 p-3 text-xs font-semibold text-slate-700 border border-slate-200">
+            <div className="flex items-center gap-1.5">
+              <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">De quién recibe:</span>
+              <span className="font-bold text-slate-900">{nombreEntregado}</span>
+            </div>
+            <span className="text-slate-300 font-bold hidden sm:inline">➔</span>
+            <div className="flex items-center gap-1.5">
+              <span className="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Cajero entrante:</span>
+              <span className="font-extrabold text-brand-600">{nombreRecibido}</span>
+            </div>
           </div>
 
           {abrirMutation.error ? (
@@ -196,7 +185,7 @@ export function AperturaPage() {
           ) : null}
 
           <div className="pt-2 flex flex-col gap-2">
-            <Button className="w-full h-11 text-sm font-bold shadow-md bg-brand-600 hover:bg-brand-500 text-white" disabled={abrirMutation.isPending || totalCalculado < 0 || !entregadoPor}>
+            <Button className="w-full h-11 text-sm font-bold shadow-md bg-brand-600 hover:bg-brand-500 text-white" disabled={abrirMutation.isPending || totalCalculado < 0}>
               {abrirMutation.isPending ? 'Abriendo caja...' : 'Confirmar y abrir caja'}
             </Button>
             <Button
