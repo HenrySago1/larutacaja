@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { signOut } from 'firebase/auth';
-import { BarChart3, Boxes, ChevronLeft, LogOut, Menu, Moon, Receipt, ShoppingCart, Sparkles, Sun, Users, X } from 'lucide-react';
+import { BarChart3, Boxes, ChevronLeft, LogOut, Menu, Moon, PanelLeft, Receipt, ShoppingCart, Sparkles, Sun, Users, X } from 'lucide-react';
 import { auth } from '../../config/firebase';
 import { useAuthStore } from '../../stores/auth-store';
 import { useThemeStore } from '../../stores/theme-store';
@@ -47,10 +47,23 @@ export function DashboardLayout() {
       <header className="sticky top-0 z-20 border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md transition-colors">
         <div className="flex h-16 items-center justify-between px-4 sm:px-6">
           <div className="flex items-center gap-3">
+            {/* Botón menú móvil */}
             <Button variant="ghost" className="lg:hidden p-2 h-9 w-9 dark:text-slate-200" onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
               {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
             </Button>
-            <div className="flex items-center gap-2.5">
+
+            {/* Botón Plegar/Desplegar Menú para Desktop */}
+            <button
+              type="button"
+              onClick={toggleCollapse}
+              className="hidden lg:flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100/80 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700 transition text-xs font-bold shadow-2xs"
+              title={isCollapsed ? "Desplegar menú lateral" : "Plegar menú lateral"}
+            >
+              <PanelLeft className="h-4 w-4 text-brand-600 dark:text-indigo-400" />
+              <span>{isCollapsed ? "Desplegar Menú" : "Plegar Menú"}</span>
+            </button>
+
+            <div className="flex items-center gap-2.5 ml-1">
               <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 text-white shadow-sm font-black text-lg">
                 R
               </div>
@@ -91,16 +104,16 @@ export function DashboardLayout() {
         } ${mobileMenuOpen ? 'translate-x-0 w-64 p-4' : '-translate-x-full lg:translate-x-0'}`}>
           
           <div>
-            {/* Toggle collapse button for desktop */}
+            {/* Toggle collapse button inside sidebar */}
             <button
               type="button"
               onClick={toggleCollapse}
-              className={`hidden lg:flex w-full items-center justify-center h-8 mb-3 rounded-lg text-slate-400 dark:text-slate-500 hover:text-slate-700 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition ${
-                isCollapsed ? '' : 'px-2 justify-between border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40'
+              className={`hidden lg:flex w-full items-center justify-between h-9 mb-3 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-100/70 dark:bg-slate-800/60 px-3 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-brand-50 dark:hover:bg-indigo-950/60 hover:text-brand-600 dark:hover:text-indigo-400 transition shadow-2xs ${
+                isCollapsed ? 'justify-center px-0' : ''
               }`}
               title={isCollapsed ? "Desplegar menú lateral" : "Plegar menú lateral"}
             >
-              {!isCollapsed && <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Menú</span>}
+              {!isCollapsed && <span>Plegar Menú</span>}
               <ChevronLeft className={`h-4 w-4 transition-transform duration-300 ${isCollapsed ? 'rotate-180' : ''}`} />
             </button>
 
