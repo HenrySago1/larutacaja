@@ -1,7 +1,9 @@
 import { FormEvent, useMemo, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { signOut } from 'firebase/auth';
 import { UserCheck } from 'lucide-react';
+import { auth } from '../../config/firebase';
 import { authApi, cajaApi } from '../../services/endpoints';
 import { Button } from '../../components/ui/button';
 import { Card } from '../../components/ui/card';
@@ -24,7 +26,13 @@ export function CierrePage() {
     mutationFn: cajaApi.cerrar,
     onSuccess: async () => {
       await queryClient.invalidateQueries({ queryKey: ['caja-activa'] });
-      navigate('/apertura');
+      try {
+        await signOut(auth);
+      } catch {
+        // Ignora si Firebase no está activo
+      }
+      localStorage.removeItem('dev-token');
+      window.location.href = '/login';
     },
   });
 
