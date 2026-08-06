@@ -12,7 +12,7 @@ const navItems = [
   { to: '/egresos', label: 'Egresos', icon: Receipt },
   { to: '/inventario', label: 'Inventario', icon: Boxes },
   { to: '/reportes', label: 'Reportes', icon: BarChart3, admin: true },
-  { to: '/impulsadoras', label: 'Impulsadoras', icon: Sparkles, admin: true },
+  { to: '/impulsadoras', label: 'Impulsadoras', icon: Sparkles },
   { to: '/usuarios', label: 'Cajeros', icon: Users, admin: true },
 ];
 

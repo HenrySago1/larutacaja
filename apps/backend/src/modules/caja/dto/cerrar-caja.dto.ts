@@ -7,5 +7,9 @@ export class CerrarCajaDto {
 
   @IsOptional()
   @IsString()
+  entregadoA?: string;
+
+  @IsOptional()
+  @IsString()
   notas?: string;
 }

@@ -34,6 +34,8 @@ export type CajaTurno = {
   diferencia?: string | null;
   notas?: string | null;
   estado: EstadoCaja;
+  userApertura?: { id: string; name: string; email: string } | null;
+  userCierre?: { id: string; name: string; email: string } | null;
 };
 
 export type Categoria = {

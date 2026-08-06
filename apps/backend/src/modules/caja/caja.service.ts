@@ -16,6 +16,17 @@ export class CajaService {
     });
   }
 
+  getUltimoCierre() {
+    return this.prisma.cajaTurno.findFirst({
+      where: { estado: EstadoCaja.CERRADO },
+      orderBy: { fechaCierre: 'desc' },
+      include: {
+        userApertura: { select: { id: true, name: true, email: true } },
+        userCierre: { select: { id: true, name: true, email: true } },
+      },
+    });
+  }
+
   getHistorial() {
     return this.prisma.cajaTurno.findMany({
       orderBy: { fechaApertura: 'desc' },
@@ -49,7 +60,7 @@ export class CajaService {
     });
   }
 
-  async cerrar(dto: CerrarCajaDto, user: RequestUser) {
+  async cerrar(dto: CerrarCajaDto & { entregadoA?: string }, user: RequestUser) {
     return this.prisma.$transaction(async (tx) => {
       const caja = await tx.cajaTurno.findFirst({ where: { estado: EstadoCaja.ABIERTO } });
       if (!caja) {
@@ -58,6 +69,13 @@ export class CajaService {
 
       const cajaReal = new Prisma.Decimal(dto.cajaReal);
       const diferencia = cajaReal.minus(caja.cajaEsperada);
+
+      const notasCombinadas = [
+        dto.entregadoA ? `Entregado turno a: ${dto.entregadoA}` : null,
+        dto.notas?.trim() || null,
+      ]
+        .filter(Boolean)
+        .join(' | ');
 
       if (!diferencia.equals(0) && !dto.notas?.trim()) {
         throw new BadRequestException('Las notas son obligatorias cuando existe diferencia de caja');
@@ -68,7 +86,7 @@ export class CajaService {
         data: {
           cajaReal,
           diferencia,
-          notas: dto.notas?.trim() || null,
+          notas: notasCombinadas || null,
           fechaCierre: new Date(),
           estado: EstadoCaja.CERRADO,
           cerradoPorId: user.id,

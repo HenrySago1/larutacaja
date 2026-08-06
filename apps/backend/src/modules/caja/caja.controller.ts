@@ -18,6 +18,11 @@ export class CajaController {
     return this.cajaService.getActivo();
   }
 
+  @Get('ultimo-cierre')
+  getUltimoCierre() {
+    return this.cajaService.getUltimoCierre();
+  }
+
   @Get('historial')
   @Roles(Role.ADMIN)
   getHistorial() {

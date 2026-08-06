@@ -12,9 +12,10 @@ export const authApi = {
 
 export const cajaApi = {
   activo: () => unwrap<CajaTurno | null>(api.get('/caja/activo')),
+  ultimoCierre: () => unwrap<CajaTurno | null>(api.get('/caja/ultimo-cierre')),
   historial: () => unwrap<CajaTurno[]>(api.get('/caja/historial')),
   abrir: (payload: { totalBilletesInicial: number; totalMonedasInicial: number; entregadoPor: string; recibidoPor: string }) => unwrap<CajaTurno>(api.post('/caja/abrir', payload)),
-  cerrar: (payload: { cajaReal: number; notas?: string }) => unwrap<CajaTurno>(api.post('/caja/cerrar', payload)),
+  cerrar: (payload: { cajaReal: number; entregadoA?: string; notas?: string }) => unwrap<CajaTurno>(api.post('/caja/cerrar', payload)),
 };
 
 export const productosApi = {

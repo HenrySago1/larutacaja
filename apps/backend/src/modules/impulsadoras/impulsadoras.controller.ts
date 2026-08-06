@@ -18,13 +18,11 @@ export class ImpulsadorasController {
   }
 
   @Post()
-  @Roles(Role.ADMIN)
   create(@Body() dto: CreateImpulsadoraDto) {
     return this.impulsadorasService.create(dto);
   }
 
   @Put(':id')
-  @Roles(Role.ADMIN)
   update(@Param('id') id: string, @Body() dto: UpdateImpulsadoraDto) {
     return this.impulsadorasService.update(id, dto);
   }
