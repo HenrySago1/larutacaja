@@ -298,16 +298,22 @@ export function PosPage() {
                     }`}
                   >
                     <div>
-                      <div className="flex items-start justify-between gap-2">
-                        <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider truncate max-w-[110px]">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-[11px] font-extrabold text-slate-400 uppercase tracking-wider truncate flex-1">
                           {producto.categoria?.nombre || 'General'}
                         </span>
                         {sinStock ? (
-                          <Badge tone="red" className="text-[10px] px-1.5 py-0 shrink-0">Sin stock</Badge>
+                          <span className="flex items-center gap-1 shrink-0" title="Sin Stock (0 u.)">
+                            <span className="h-2.5 w-2.5 rounded-full bg-red-500 shadow-xs" />
+                          </span>
                         ) : bajoStock ? (
-                          <Badge tone="amber" className="text-[10px] px-1.5 py-0 shrink-0">Bajo stock</Badge>
+                          <span className="flex items-center gap-1 shrink-0" title={`Bajo Stock (${producto.stock} u.)`}>
+                            <span className="h-2.5 w-2.5 rounded-full bg-amber-500 animate-pulse shadow-xs" />
+                          </span>
                         ) : (
-                          <Badge tone="green" className="text-[10px] px-1.5 py-0 shrink-0">Stock</Badge>
+                          <span className="flex items-center gap-1 shrink-0" title={`Disponible (${producto.stock} u.)`}>
+                            <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shadow-xs" />
+                          </span>
                         )}
                       </div>
 
@@ -316,10 +322,10 @@ export function PosPage() {
                       </h3>
                     </div>
 
-                    <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-end justify-between gap-2">
-                      <div>
-                        <p className="text-[10px] font-bold text-slate-400 uppercase">Stock: {producto.stock}</p>
-                        <p className="text-base font-black text-slate-900 leading-tight">
+                    <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-[10px] font-bold text-slate-400 uppercase truncate">Stock: {producto.stock}</p>
+                        <p className="text-base font-black text-slate-900 leading-tight truncate">
                           {formatMoney(producto.precioVenta)}
                         </p>
                       </div>
@@ -333,8 +339,8 @@ export function PosPage() {
                         }}
                         className={`h-8 px-2.5 text-xs font-bold shrink-0 flex items-center gap-1 transition-all ${
                           sinStock
-                            ? 'bg-slate-100 text-slate-400'
-                            : 'bg-brand-50 text-brand-700 hover:bg-brand-600 hover:text-white border border-brand-200 hover:border-brand-600'
+                            ? 'bg-slate-100 text-slate-400 border border-slate-200'
+                            : 'bg-brand-50 text-brand-700 hover:bg-brand-600 hover:text-white border border-brand-200 hover:border-brand-600 shadow-2xs'
                         }`}
                         title="Agregar producto"
                       >

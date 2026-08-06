@@ -90,23 +90,58 @@ export function InventarioPage() {
         ) : null}
       </div>
       {user?.role === 'ADMIN' ? (
-        <Card className="p-5">
-          <form className="grid grid-cols-1 md:grid-cols-7 gap-3" onSubmit={handleSubmit}>
-            <Input className="md:col-span-2" placeholder="Nombre" value={form.nombre} onChange={(event) => setForm({ ...form, nombre: event.target.value })} required />
-            <Select value={effectiveForm.categoriaId} onChange={(event) => setForm({ ...form, categoriaId: event.target.value })}>
-              {categoriasQuery.data?.map((categoria) => <option key={categoria.id} value={categoria.id}>{categoria.nombre}</option>)}
-            </Select>
-            <Input type="number" min="0" step="0.01" placeholder="P. compra" value={form.precioCompra} onChange={(event) => setForm({ ...form, precioCompra: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
-            <Input type="number" min="0" step="0.01" placeholder="P. venta" value={form.precioVenta} onChange={(event) => setForm({ ...form, precioVenta: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
-            <Input type="number" min="0" placeholder="Stock" value={form.stock} onChange={(event) => setForm({ ...form, stock: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
-            <Button disabled={saveMutation.isPending}>{editingId ? 'Actualizar' : 'Nuevo producto'}</Button>
-          </form>
-          {editingId ? (
-            <div className="mt-3 flex items-center gap-3">
-              <p className="text-sm text-slate-500">Editando producto</p>
-              <Button variant="ghost" onClick={() => { setEditingId(null); setForm(emptyProduct); }}>Cancelar</Button>
+        <Card className="p-5 shadow-sm border-slate-200">
+          <h2 className="text-xs font-extrabold uppercase tracking-wider text-slate-400 mb-3">
+            {editingId ? 'Editando producto de inventario' : 'Registrar nuevo producto'}
+          </h2>
+          <form className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-3 items-end" onSubmit={handleSubmit}>
+            <div className="xl:col-span-2">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Nombre del producto <span className="text-red-500">*</span>
+              </label>
+              <Input placeholder="Ej. Ron Abuelo 750ml" value={form.nombre} onChange={(event) => setForm({ ...form, nombre: event.target.value })} required />
             </div>
-          ) : null}
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                Categoría <span className="text-red-500">*</span>
+              </label>
+              <Select value={effectiveForm.categoriaId} onChange={(event) => setForm({ ...form, categoriaId: event.target.value })}>
+                {categoriasQuery.data?.map((categoria) => <option key={categoria.id} value={categoria.id}>{categoria.nombre}</option>)}
+              </Select>
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">P. Compra (Bs.)</label>
+              <Input type="number" min="0" step="0.01" placeholder="0.00" value={form.precioCompra} onChange={(event) => setForm({ ...form, precioCompra: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">P. Venta (Bs.)</label>
+              <Input type="number" min="0" step="0.01" placeholder="0.00" value={form.precioVenta} onChange={(event) => setForm({ ...form, precioVenta: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Stock Actual</label>
+              <Input type="number" min="0" placeholder="0" value={form.stock} onChange={(event) => setForm({ ...form, stock: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Stock Mínimo</label>
+              <Input type="number" min="0" placeholder="5" value={form.stockMinimo} onChange={(event) => setForm({ ...form, stockMinimo: Number(event.target.value) })} onFocus={(e) => e.target.select()} />
+            </div>
+
+            <div className="flex gap-2">
+              <Button disabled={saveMutation.isPending} className="w-full h-10 text-xs font-bold bg-brand-600 text-white hover:bg-brand-500 shadow-xs">
+                {editingId ? 'Actualizar' : 'Guardar'}
+              </Button>
+              {editingId && (
+                <Button type="button" variant="secondary" className="h-10 text-xs font-bold" onClick={() => { setEditingId(null); setForm(emptyProduct); }}>
+                  Cancelar
+                </Button>
+              )}
+            </div>
+          </form>
         </Card>
       ) : null}
       <Card className="p-5">

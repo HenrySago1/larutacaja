@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put, UseGuards } from '@nestjs/common';
 import { Role } from '@prisma/client';
 import { GetUser, RequestUser } from '../../common/decorators/get-user.decorator';
 import { Roles } from '../../common/decorators/roles.decorator';
@@ -27,5 +27,17 @@ export class AuthController {
   @Roles(Role.ADMIN)
   getUsers() {
     return this.authService.findAll();
+  }
+
+  @Put('users/:id')
+  @Roles(Role.ADMIN)
+  updateUser(@Param('id') id: string, @Body() dto: { name?: string; email?: string; password?: string }) {
+    return this.authService.updateUser(id, dto);
+  }
+
+  @Delete('users/:id')
+  @Roles(Role.ADMIN)
+  deleteUser(@Param('id') id: string) {
+    return this.authService.deleteUser(id);
   }
 }

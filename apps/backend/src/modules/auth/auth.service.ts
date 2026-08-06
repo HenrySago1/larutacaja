@@ -49,4 +49,49 @@ export class AuthService {
       orderBy: { createdAt: 'desc' },
     });
   }
+
+  async updateUser(id: string, dto: { name?: string; email?: string; password?: string }) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    if (user.firebaseUid) {
+      try {
+        await this.firebase.auth().updateUser(user.firebaseUid, {
+          email: dto.email || undefined,
+          displayName: dto.name || undefined,
+          password: dto.password || undefined,
+        });
+      } catch (err) {
+        // Ignora si Firebase no esta configurado o en entorno local
+      }
+    }
+
+    return this.prisma.user.update({
+      where: { id },
+      data: {
+        ...(dto.name ? { name: dto.name } : {}),
+        ...(dto.email ? { email: dto.email } : {}),
+      },
+    });
+  }
+
+  async deleteUser(id: string) {
+    const user = await this.prisma.user.findUnique({ where: { id } });
+    if (!user) {
+      throw new BadRequestException('Usuario no encontrado');
+    }
+
+    if (user.firebaseUid) {
+      try {
+        await this.firebase.auth().deleteUser(user.firebaseUid);
+      } catch (err) {
+        // Ignora si el usuario no existe en Firebase
+      }
+    }
+
+    await this.prisma.user.delete({ where: { id } });
+    return { message: 'Usuario eliminado con exito' };
+  }
 }

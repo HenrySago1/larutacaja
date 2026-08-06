@@ -5,6 +5,8 @@ export const authApi = {
   me: () => unwrap<User>(api.get('/auth/me')),
   users: () => unwrap<User[]>(api.get('/auth/users')),
   registerCajero: (payload: { email: string; password: string; name: string }) => unwrap<{ message: string; id: string }>(api.post('/auth/register-cajero', payload)),
+  updateUser: (id: string, payload: { email?: string; password?: string; name?: string }) => unwrap<User>(api.put(`/auth/users/${id}`, payload)),
+  deleteUser: (id: string) => unwrap<{ message: string }>(api.delete(`/auth/users/${id}`)),
 };
 
 export const cajaApi = {
