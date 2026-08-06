@@ -12,6 +12,7 @@ type PosState = {
   tipoPago: TipoPago | '';
   impulsadoraId: string;
   addItem: (producto: Producto) => void;
+  updateQuantity: (productoId: string, cantidad: number) => void;
   removeItem: (productoId: string) => void;
   setItemPrice: (productoId: string, precio: number | undefined) => void;
   clear: () => void;
@@ -34,6 +35,19 @@ export const usePosStore = create<PosState>((set) => ({
         };
       }
       return { items: [...state.items, { producto, cantidad: 1 }] };
+    }),
+  updateQuantity: (productoId, cantidad) =>
+    set((state) => {
+      if (cantidad <= 0) {
+        return { items: state.items.filter((item) => item.producto.id !== productoId) };
+      }
+      return {
+        items: state.items.map((item) =>
+          item.producto.id === productoId
+            ? { ...item, cantidad: Math.min(cantidad, item.producto.stock) }
+            : item,
+        ),
+      };
     }),
   removeItem: (productoId) => set((state) => ({ items: state.items.filter((item) => item.producto.id !== productoId) })),
   setItemPrice: (productoId, precio) =>
